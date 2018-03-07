@@ -1,5 +1,5 @@
 import unittest
-import sklearn
+import sklearn.decomposition
 import numpy as np
 from sklearn import datasets
 
