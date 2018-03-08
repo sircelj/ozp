@@ -18,7 +18,7 @@ class PCATest(unittest.TestCase):
 
         s_pca_X = s_pca.transform(self.X)
 
-        for my_pca in (PowerPCA, ):  # , OrtoPCA):
+        for my_pca in (PowerPCA, OrtoPCA):
             my_pca = my_pca(n_components=n_comp)
             my_pca.fit(self.X)
 
@@ -37,15 +37,13 @@ class PCATest(unittest.TestCase):
 
             # Check if the components_ are paralel and of the same length
             for r1, r2 in zip(my_pca.components_, s_pca.components_):
-                self.assertAlmostEqual(abs(r1.dot(r2) / np.linalg.norm(r1) ** 2), 1.)
+                self.assertAlmostEqual(abs(r1.dot(r2)) / np.linalg.norm(r1) ** 2, 1.)
                 self.assertAlmostEqual(np.linalg.norm(r1), np.linalg.norm(r2))
 
             # Check if the transforms are paralel and of the same length
             for j in range(n_comp):
                 self.assertAlmostEqual(abs(my_pca_X[:, j].dot(s_pca_X[:, j])) / np.linalg.norm(my_pca_X[:, j]) ** 2, 1.)
                 self.assertAlmostEqual(np.linalg.norm(my_pca_X[:, j]), np.linalg.norm(my_pca_X[:, j]))
-
-            np.testing.assert_array_almost_equal(my_pca_X, s_pca_X, decimal=5)
 
 
 if __name__ == "__main__":
