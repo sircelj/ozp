@@ -3,33 +3,28 @@ import sklearn.decomposition
 import numpy as np
 from sklearn import datasets
 
-from pca import EigenPCA, PowerPCA, OrtoPCA
+from pca import PowerPCA, OrtoPCA, EigenPCA
 
 
 class PCATest(unittest.TestCase):
     def setUp(self):
         X = datasets.load_iris().data
         self.X = X - X.mean(axis=0)
+        self.n_comp = 3
 
     def test_pca(self):
-        n_comp = 3
-        s_pca = sklearn.decomposition.PCA(n_comp)
+        s_pca = sklearn.decomposition.PCA(self.n_comp)
         s_pca.fit(self.X)
 
-        s_pca_X = s_pca.transform(self.X)
-
-        for my_pca in (EigenPCA, PowerPCA, OrtoPCA):
-            my_pca = my_pca(n_components=n_comp)
+        for my_pca in (PowerPCA, OrtoPCA, EigenPCA):
+            my_pca = my_pca(n_components=self.n_comp)
             my_pca.fit(self.X)
 
-            my_pca_X = my_pca.transform(self.X)
-
-            self.assertEqual(my_pca.explained_variance_.shape, (3, ))
+            self.assertEqual(my_pca.explained_variance_.shape, (self.n_comp, ))
             np.testing.assert_array_almost_equal(my_pca.explained_variance_,
-                                                 s_pca.explained_variance_, decimal=5)
-
+                                                 s_pca.explained_variance_, decimal=1)
             np.testing.assert_array_almost_equal(my_pca.explained_variance_ratio_,
-                                                 s_pca.explained_variance_ratio_, decimal=5)
+                                                 s_pca.explained_variance_ratio_, decimal=1)
 
             diff = sum(min(np.linalg.norm(r1 - r2), np.linalg.norm(r1 + r2))
                        for r1, r2 in zip(my_pca.components_, s_pca.components_))
@@ -40,11 +35,27 @@ class PCATest(unittest.TestCase):
                 self.assertAlmostEqual(abs(r1.dot(r2)) / np.linalg.norm(r1) ** 2, 1.)
                 self.assertAlmostEqual(np.linalg.norm(r1), np.linalg.norm(r2))
 
+    def test_transform(self):
+        n_sample = 5
+        train, test = self.X[:-n_sample], self.X[-n_sample:]
+        s_pca = sklearn.decomposition.PCA(self.n_comp)
+        s_pca.fit(train)
+        sk_T = s_pca.transform(test)
+
+        for my_pca in (PowerPCA, OrtoPCA, EigenPCA):
+            my_pca = my_pca(self.n_comp)
+            my_pca.fit(train)
+
+            my_T = my_pca.transform(self.X[-n_sample:])
+            self.assertEqual(my_T.shape, (n_sample, self.n_comp))
+            for c1, c2 in zip(sk_T.T, my_T.T):
+                np.testing.assert_almost_equal(min(np.linalg.norm(c1 - c2), np.linalg.norm(c1 + c2)), 0.)
+
             # Check if the transforms are paralel and of the same length
-            for j in range(n_comp):
-                self.assertAlmostEqual(abs(my_pca_X[:, j].dot(s_pca_X[:, j])) / np.linalg.norm(my_pca_X[:, j]) ** 2, 1.)
-                self.assertAlmostEqual(np.linalg.norm(my_pca_X[:, j]), np.linalg.norm(my_pca_X[:, j]))
+            for j in range(self.n_comp):
+                self.assertAlmostEqual(abs(my_T[:, j].dot(sk_T[:, j])) / np.linalg.norm(my_T[:, j]) ** 2, 1.)
+                self.assertAlmostEqual(np.linalg.norm(sk_T[:, j]), np.linalg.norm(my_T[:, j]))
 
 
 if __name__ == "__main__":
-    unittest.main(verbosity=2)
+    unittest.main(verbosity=3)
