@@ -3,7 +3,7 @@ import sklearn.decomposition
 import numpy as np
 from sklearn import datasets
 
-from pca import PowerPCA, OrtoPCA
+from pca import EigenPCA, PowerPCA, OrtoPCA
 
 
 class PCATest(unittest.TestCase):
@@ -18,7 +18,7 @@ class PCATest(unittest.TestCase):
 
         s_pca_X = s_pca.transform(self.X)
 
-        for my_pca in (PowerPCA, OrtoPCA):
+        for my_pca in (EigenPCA, PowerPCA, OrtoPCA):
             my_pca = my_pca(n_components=n_comp)
             my_pca.fit(self.X)
 
