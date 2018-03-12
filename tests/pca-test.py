@@ -69,7 +69,5 @@ class PCATest(unittest.TestCase):
         self.method_test(OrtoPCA)
 
 
-
-
 if __name__ == "__main__":
     unittest.main(verbosity=2)
