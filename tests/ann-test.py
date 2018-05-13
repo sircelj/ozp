@@ -11,20 +11,20 @@ class NeuralNetworkTest(unittest.TestCase):
         self.X, self.y = iris.data, iris.target
 
     def test_set_data(self):
-        ann = NeuralNetwork([5, 3], alpha=0.01)
+        ann = NeuralNetwork([5, 3], alpha=1e-5)
         ann.set_data_(self.X, self.y)
         coefs = ann.init_weights_()
         self.assertEqual(len(coefs), 55)
 
     def test_weighs_structure(self):
-        ann = NeuralNetwork([5, 3], alpha=0.01)
+        ann = NeuralNetwork([5, 3], alpha=1e-5)
         ann.set_data_(self.X, self.y)
         coefs = ann.unflatten_coefs(ann.init_weights_())
         shapes = np.array([coef.shape for coef in coefs])
         np.testing.assert_array_equal(shapes, np.array([[5, 5], [6, 3], [4, 3]]))
 
     def test_gradient_computation(self):
-        ann = NeuralNetwork([2, 2], alpha=0.01)
+        ann = NeuralNetwork([2, 2], alpha=1e-5)
         ann.set_data_(self.X, self.y)
         coefs = ann.init_weights_()
         g1 = ann.grad_approx(coefs, e=1e-5)
