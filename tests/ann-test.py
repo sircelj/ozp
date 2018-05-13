@@ -1,8 +1,8 @@
 import unittest
 import numpy as np
-from sklearn import datasets
 
 from ann import NeuralNetwork
+from sklearn import datasets, utils, metrics
 
 
 class NeuralNetworkTest(unittest.TestCase):
@@ -32,20 +32,32 @@ class NeuralNetworkTest(unittest.TestCase):
         np.testing.assert_array_almost_equal(g1, g2, decimal=10)
 
     def test_fit_and_predict(self):
-        ann = NeuralNetwork([4, 2], alpha=0.01)
+        ann = NeuralNetwork([4, 2], alpha=1e-5)
         ann.fit(self.X, self.y)
         T = self.X[[10, 60, 110]]
         predictions = ann.predict(T)
         np.testing.assert_array_equal(predictions, np.array([0, 1, 2]))
 
     def test_predict_probabilities(self):
-        ann = NeuralNetwork([4, 2], alpha=0.01)
+        ann = NeuralNetwork([4, 2], alpha=1e-5)
         ann.fit(self.X, self.y)
         T = self.X[[15, 65, 115, 117]]
         ps = ann.predict_proba(T)
         margin = np.min(np.max(ps, axis=1))
         self.assertGreater(margin, 0.90)
 
+    def test_on_digits(self):
+        data_full = datasets.load_digits()
+        data, resp = utils.shuffle(data_full.data, data_full.target)
+        m = data.shape[0]
+        X, y = data[:m // 2], resp[:m // 2]
+        X_test, y_test = data[m // 2:], resp[m // 2:]
+
+        ann = NeuralNetwork([20, 5], alpha=1e-5)
+        ann.fit(X, y)
+        y_hat = ann.predict(X_test)
+        acc = metrics.accuracy_score(y_test, y_hat)
+        self.assertGreater(acc, 0.85)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
