@@ -65,7 +65,7 @@ class NeuralNetworkTest(unittest.TestCase):
         clf = NeuralNetwork([10, 2], alpha=1e-5)
         scores = cross_validate(clf, self.X, self.y, scoring='accuracy', cv=5)
         acc = np.sum(scores["test_score"]) / 5
-        self.assertGreater(acc, 0.95)
+        self.assertGreater(acc, 0.94)
 
 
 if __name__ == "__main__":
