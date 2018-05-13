@@ -59,5 +59,14 @@ class NeuralNetworkTest(unittest.TestCase):
         acc = metrics.accuracy_score(y_test, y_hat)
         self.assertGreater(acc, 0.85)
 
+    def test_with_crossvalidation(self):
+        from sklearn.model_selection import cross_validate
+
+        clf = NeuralNetwork([10, 2], alpha=1e-5)
+        scores = cross_validate(clf, self.X, self.y, scoring='accuracy', cv=5)
+        acc = np.sum(scores["test_score"]) / 5
+        self.assertGreater(acc, 0.95)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
