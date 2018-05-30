@@ -43,7 +43,7 @@ class PCATest(unittest.TestCase):
 
     def test_blob_coefficients(self):
         X, y = generate_data("blobs")
-        svm = SVM(epochs=5000, kernel="linear")
+        svm = SVM(C=1, rate=0.001, epochs=5000, kernel="linear")
         svm.fit(X, y)
         ref = np.array([3.8, -1.6, -1.0])
 
@@ -51,21 +51,21 @@ class PCATest(unittest.TestCase):
 
     def test_blob_prediction(self):
         X, y = generate_data("blobs")
-        svm = SVM(epochs=5000, kernel="linear")
+        svm = SVM(C=1, rate=0.001, epochs=5000, kernel="linear")
         svm.fit(X, y)
         errors = np.sum(np.abs(svm.predict(X) - y))
         self.assertLess(errors, 8)
 
     def test_circle_prediction(self):
         X, y = generate_data("circle", n_samples=200)
-        svm = SVM(epochs=5000, kernel="rbf")
+        svm = SVM(C=1, rate=0.001, epochs=5000, kernel="rbf")
         svm.fit(X, y)
         errors = np.sum(np.abs(svm.predict(X) - y))
         self.assertLess(errors, 20)
 
     def test_text_training(self):
         X, y = get_text_data("text-data")
-        svm = SVM(epochs=100, kernel="text")
+        svm = SVM(C=1, rate=0.001, epochs=100, kernel="text")
         svm.fit(X, y)
         errors = np.sum(np.abs(svm.predict(X) - y))
         self.assertEqual(errors, 0)
