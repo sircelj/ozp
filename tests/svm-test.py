@@ -31,7 +31,7 @@ def get_text_data(origin="text-data"):
     for i, d in enumerate(dirs):
         files = glob.glob(d + "/*")
         for file_name in files:
-            with open(file_name, "rt") as file:
+            with open(file_name, "rt", encoding="utf8") as file:
                 X.append(" ".join(file.readlines()))
         y.extend([i] * len(files))
     return np.array(X), np.array(y)
