@@ -37,7 +37,7 @@ def get_text_data(origin="text-data"):
     return np.array(X), np.array(y)
 
 
-class PCATest(unittest.TestCase):
+class SVMTest(unittest.TestCase):
     def setUp(self):
         pass
 
